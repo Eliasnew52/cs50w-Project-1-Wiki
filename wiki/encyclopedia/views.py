@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from markdown2 import Markdown
 from . import util
+from . import forms
 import random
 
 from . import util
@@ -63,3 +64,22 @@ def Matches(TITLE):
         #List Check
         print(results)
         return results
+
+
+def new_entry(request):
+    if request.method == 'POST':
+        form = forms.NewEntryForm(request.POST)
+
+        if form.is_valid():
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
+
+            if title in util.list_entries():
+                return render(request, "encyclopedia/new_entry.html", {"form": form,"error": "Title Already Exists"})
+
+            util.save_entry(title, content)
+            return redirect('entry', TITLE=title)
+        else:
+            return render(request, "encyclopedia/new_entry.html", {"form": form})
+        
+    return render(request, "encyclopedia/new_entry.html", {"form": forms.NewEntryForm})
