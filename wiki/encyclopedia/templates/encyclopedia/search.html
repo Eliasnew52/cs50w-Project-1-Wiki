@@ -5,12 +5,16 @@
 {% endblock %}
 
 {% block body %}
-    <h1>All Pages</h1>
-
+    {% if entries %}
+    <h1>All Results</h1>
+    <div class="alert alert-info" role="alert">Search Results For: {{ keyword }}</div>
     <ul>
         {% for entry in entries %}
             <li><a href="{% url 'entry' entry %}">{{ entry }}</a></li>
         {% endfor %}
     </ul>
+    {% else %}
+    <div class="alert alert-danger" role="alert">No Results Found for {{ keyword }}</div>
+    {% endif %}
 
 {% endblock %}
