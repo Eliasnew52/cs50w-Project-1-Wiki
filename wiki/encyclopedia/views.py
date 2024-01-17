@@ -66,7 +66,7 @@ def Matches(TITLE):
         return results
 
 
-def new_entry(request):
+def Entry_Creation(request):
     if request.method == 'POST':
         form = forms.NewEntryForm(request.POST)
 
@@ -83,3 +83,50 @@ def new_entry(request):
             return render(request, "encyclopedia/new_entry.html", {"form": form})
         
     return render(request, "encyclopedia/new_entry.html", {"form": forms.NewEntryForm})
+
+
+
+#Entry Edition 
+def Entry_Edit(request, TITLE):
+    if request.method == 'POST':
+        form = forms.EntryEditionForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            util.save_entry(TITLE, content)
+            return redirect('entry', TITLE=TITLE)
+        else:
+            return render(request, 'encyclopedia/edit_page.html', {
+                "title": TITLE,
+                "form": form,
+            })
+
+    entry = util.get_entry(TITLE)
+    if entry:
+        entry_data = {
+            'content': entry
+        }
+        form =forms.EntryEditionForm(initial=entry_data)
+        return render(request, 'encyclopedia/edit_entry.html', {
+            "title": TITLE,
+            "form": form
+        })
+    else: 
+        return render(request, 'encyclopedia/edit_entry.html', {
+            "title": TITLE,
+        })
+
+
+#Random Entry
+
+def Random_Entry(request):
+
+    if request.method == 'GET':
+
+        All_Entries = util.list_entries()
+
+        if All_Entries:
+            entry = random.choice(All_Entries)
+            return redirect('entry', TITLE=entry)
+        else:
+            return redirect("index")
+
